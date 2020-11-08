@@ -7,7 +7,12 @@ def clean_zipcode(zipcode)
 end
 
 def clean_phone_number(phone_number)
-	phone_number.gsub(/[^\d]/, "")
+	phone_number = phone_number.to_s.gsub(/[^\d]/, "").ljust(10, "0")
+	if phone_number.length > 10 and phone_number[0] == "1"
+		phone_number = phone_number[1..10]
+	else
+		phone_number
+	end
 end
 
 def legislators_by_zipcode(zipcode)
