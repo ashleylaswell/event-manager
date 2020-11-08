@@ -15,6 +15,14 @@ def clean_phone_number(phone_number)
 	end
 end
 
+def register_date(register_date)
+	register_date = DateTime.strptime(register_date, '%m/%d/%Y %H:%M')
+end
+
+def popular_hour(hour_array)
+	hour_array.max_by {|i| hour_array.count(i)}
+end
+
 def legislators_by_zipcode(zipcode)
 	civic_info = Google::Apis::CivicinfoV2::CivicInfoService.new
 	civic_info.key = 'AIzaSyClRzDqDh5MsXwnCWi0kOiiBivP6JsSyBw'
@@ -46,6 +54,7 @@ contents = CSV.open "event_attendees.csv", headers: true, header_converters: :sy
 
 template_letter = File.read "form_letter.erb"
 erb_template = ERB.new template_letter
+hour_array = Array.new
 
 contents.each do |row|
 	id = row[0]
@@ -53,10 +62,15 @@ contents.each do |row|
 	zipcode = clean_zipcode(row[:zipcode])
 	legislators = legislators_by_zipcode(zipcode)
 	phone_number = clean_phone_number(row[:homephone])
+	register_date = register_date(row[:regdate])
+	register_hour = register_date.hour.to_s
+	hour_array.push(register_hour)
 
-	form_letter = erb_template.result(binding)
+	#form_letter = erb_template.result(binding)
 	
 	#save_thank_you_letter(id,form_letter)
 
-	puts "#{name} #{phone_number}"
+	#puts "#{name} #{register_hour}"
 end
+
+puts "The most popular hour is #{popular_hour(hour_array)}."
