@@ -7,6 +7,7 @@ def clean_zipcode(zipcode)
 end
 
 def clean_phone_number(phone_number)
+	phone_number.gsub(/[^\d]/, "")
 end
 
 def legislators_by_zipcode(zipcode)
@@ -46,7 +47,7 @@ contents.each do |row|
 	name = row[:first_name]
 	zipcode = clean_zipcode(row[:zipcode])
 	legislators = legislators_by_zipcode(zipcode)
-	phone_number = row[:homephone]
+	phone_number = clean_phone_number(row[:homephone])
 
 	form_letter = erb_template.result(binding)
 	
