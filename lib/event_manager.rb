@@ -23,6 +23,12 @@ def popular_hour(hour_array)
 	hour_array.max_by {|i| hour_array.count(i)}
 end
 
+def popular_day(day_array)
+	popular_day = day_array.max_by {|i| day_array.count(i)}
+	to_string = {0 => "Sunday", 1 => "Monday", 2 => "Tuesday", 3 => "Wednesday", 4 => "Thursday", 5 => "Friday", 6 => "Saturday"}
+	to_string[popular_day]
+end
+
 def legislators_by_zipcode(zipcode)
 	civic_info = Google::Apis::CivicinfoV2::CivicInfoService.new
 	civic_info.key = 'AIzaSyClRzDqDh5MsXwnCWi0kOiiBivP6JsSyBw'
@@ -54,7 +60,8 @@ contents = CSV.open "event_attendees.csv", headers: true, header_converters: :sy
 
 template_letter = File.read "form_letter.erb"
 erb_template = ERB.new template_letter
-hour_array = Array.new
+#hour_array = Array.new
+day_array = Array.new
 
 contents.each do |row|
 	id = row[0]
@@ -63,14 +70,18 @@ contents.each do |row|
 	legislators = legislators_by_zipcode(zipcode)
 	phone_number = clean_phone_number(row[:homephone])
 	register_date = register_date(row[:regdate])
-	register_hour = register_date.hour.to_s
-	hour_array.push(register_hour)
+	register_hour = register_date.hour
+	register_day = register_date.wday
+	#hour_array.push(register_hour)
+	day_array.push(register_day)
 
 	#form_letter = erb_template.result(binding)
 	
 	#save_thank_you_letter(id,form_letter)
 
-	#puts "#{name} #{register_hour}"
+	#puts "#{name} #{register_day}"
 end
 
-puts "The most popular hour is #{popular_hour(hour_array)}."
+#puts "The most popular hour is #{popular_hour(hour_array)}."
+
+puts "The most popular day is #{popular_day(day_array)}."
